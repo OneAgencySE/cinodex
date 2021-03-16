@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use crate::client::API_PATH;
 use crate::CINodeClient;
 use regex::Regex;
@@ -147,11 +145,10 @@ impl FileExtractor {
             .await;
 
         let (tx, mut rx) = mpsc::channel::<(u32, Vec<Project>)>(100);
-        let tx = Arc::new(tx);
 
         for customer in customers {
             let client = self.client.clone();
-            let tx = Arc::clone(&tx);
+            let tx = tx.clone();
             tokio::spawn(async move {
                 let customer_details = client
                     .get_cached::<CustomerDetails>(format!(
